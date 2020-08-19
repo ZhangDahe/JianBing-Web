@@ -47,7 +47,7 @@ if not app.debug:
          #   fromaddr='no-reply@' + app.config['MAIL_SERVER'],
             fromaddr= app.config['MAIL_USERNAME'],
             toaddrs=app.config['RECV_MAIL'],
-            subject='Microblog Failure',
+            subject='小站崩了',
             credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
@@ -61,7 +61,7 @@ if not app.debug:
     app.logger.addHandler(file_handler)
 
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Microblog startup')
+    app.logger.info('小站开始')
 
 @babel.localeselector
 def get_locale():

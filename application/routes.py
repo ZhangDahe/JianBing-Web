@@ -29,7 +29,7 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
+        flash('发布成功!')
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
@@ -38,7 +38,7 @@ def index():
         if posts.has_next else None
     prev_url = url_for('index', page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('index.html', title='Home', form=form,
+    return render_template('index.html', title='主页', form=form,
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
 
@@ -53,7 +53,7 @@ def explore():
         if posts.has_next else None
     prev_url = url_for('explore', page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('index.html', title='Explore', posts=posts.items,
+    return render_template('index.html', title='发现', posts=posts.items,
                            next_url=next_url, prev_url=prev_url)
 
 
@@ -67,7 +67,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('账号或密码错误')
             return redirect(url_for('login'))
 
         login_user(user, remember=form.remember_me.data)
@@ -78,7 +78,7 @@ def login():
             next_page = url_for('index')
 
         return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('login.html', title='登录', form=form)
 
 
 @app.route('/logout')
@@ -97,9 +97,9 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('注册成功')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='注册', form=form)
 
 
 @app.route('/user/<username>')
@@ -126,12 +126,12 @@ def edit_profile():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash('更改已保存')
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title='Edit Profile',
+    return render_template('edit_profile.html', title='编辑名片',
                            form=form)
 
 
@@ -142,14 +142,14 @@ def follow(username):
     if form.validate_on_submit():
         user = User.query.filter_by(username=username).first()
         if user is None:
-            flash('User {} not found.'.format(username))
+            flash('用户 {} 未找到'.format(username))
             return redirect(url_for('index'))
         if user == current_user:
-            flash('You cannot follow yourself!')
+            flash('不能关注自己')
             return redirect(url_for('user', username=username))
         current_user.follow(user)
         db.session.commit()
-        flash('You are following {}!'.format(username))
+        flash('你已关注 {}!'.format(username))
         return redirect(url_for('user', username=username))
     else:
         return redirect(url_for('index'))
@@ -162,14 +162,14 @@ def unfollow(username):
     if form.validate_on_submit():
         user = User.query.filter_by(username=username).first()
         if user is None:
-            flash('User {} not found.'.format(username))
+            flash('用户名 {}未找到.'.format(username))
             return redirect(url_for('index'))
         if user == current_user:
-            flash('You cannot unfollow yourself!')
+            flash('不能关注自己!')
             return redirect(url_for('user', username=username))
         current_user.unfollow(user)
         db.session.commit()
-        flash('You are not following {}.'.format(username))
+        flash('你已关注 {}.'.format(username))
         return redirect(url_for('user', username=username))
     else:
         return redirect(url_for('index'))
@@ -183,10 +183,10 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-        flash('Check your email for the instructions to reset your password')
+        flash('检查邮箱地址以重置密码')
         return redirect(url_for('login'))
     return render_template('reset_password_request.html',
-                           title='Reset Password', form=form)
+                           title='重置密码', form=form)
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -200,6 +200,6 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been reset.')
+        flash('密码已重置')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)

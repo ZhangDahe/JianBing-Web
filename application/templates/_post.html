@@ -9,7 +9,7 @@
                 <a href="{{ url_for('user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
-                says: {{ moment(post.timestamp).fromNow() }}:
+                发表于:{{ moment().format('YYYY-MM-DD HH:mm:ss') }}:
                 <br>
                 {{ post.body }}
             </td>
